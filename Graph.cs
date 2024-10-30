@@ -36,10 +36,6 @@ namespace GrantAssignment
         }
     }
 
-    public interface IOnNodeVisited<T>
-    {
-        void visited(T node);
-    }
 
     class Graph
     {
@@ -51,20 +47,21 @@ namespace GrantAssignment
                 return graph.Count;
             }
         }
+        public delegate void OnNodeVisited(GNode node);
 
         Dictionary<int, GNode> graph = new Dictionary<int, GNode>();
 
 
         public void AddNode(int label)
         {
-            ThrowIfNodeDoesntExist(label);
+            ThrowIfNodeDoesExist(label);
             graph.Add(label, new GNode(label));
 
         }
 
-        private void ThrowIfNodeDoesntExist(int label)
+        private void ThrowIfNodeDoesExist(int label)
         {
-            if (HasNode(label))
+            if (!HasNode(label))
             {
                 return;
             }
@@ -73,8 +70,8 @@ namespace GrantAssignment
 
         public bool HasEdge(float weight, int node1, int node2)
         {
-            ThrowIfNodeDoesntExist(node1);
-            ThrowIfNodeDoesntExist(node2);
+            ThrowIfNodeDoesExist(node1);
+            ThrowIfNodeDoesExist(node2);
 
             return graph[node1].HasEdge(weight, node2) && graph[node2].HasEdge(weight, node1);
 
@@ -97,9 +94,8 @@ namespace GrantAssignment
         }
 
         //QUESTION 2 BFS TRAVERSAL
-        public void BFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
+        public void BFS(int labelNode, OnNodeVisited onVisit)
         {
-            ThrowIfNodeDoesntExist(labelNode);
             Queue<GNode> queue = new Queue<GNode>();
             HashSet<int> visited = new HashSet<int>();
             queue.Enqueue(graph[labelNode]);
@@ -111,21 +107,22 @@ namespace GrantAssignment
 
                 foreach (var edge in current.neighbours)
                 {
-                    if (!visited.Contains(edge.neighbour.label))
+                    var label = edge.neighbour.label;
+                    if (!visited.Contains(label))
                     {
                         queue.Enqueue(edge.neighbour);
+                        visited.Add(label);
                     }
                 }
 
-                onNodeVisited.visited(current);
+                onVisit(current);
             }
 
         }
 
         //QUESTION 2 DFS TRAVERSAL
-        public void DFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
+        public void DFS(int labelNode, OnNodeVisited onVisit)
         {
-            ThrowIfNodeDoesntExist(labelNode);
             Stack<GNode> stack = new Stack<GNode>();
             HashSet<int> visited = new HashSet<int>();
             stack.Push(graph[labelNode]);
@@ -137,13 +134,15 @@ namespace GrantAssignment
 
                 foreach (var edge in current.neighbours)
                 {
-                    if (!visited.Contains(edge.neighbour.label))
+                    var label = edge.neighbour.label;
+                    if (!visited.Contains(label))
                     {
                         stack.Push(edge.neighbour);
+                        visited.Add(label);
                     }
                 }
 
-                onNodeVisited.visited(current);
+                onVisit(current);
             }
         }
 

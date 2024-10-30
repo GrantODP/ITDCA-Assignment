@@ -1,2 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using GrantAssignment;
+
+
+Graph graph = new Graph();
+graph.FromFile("Graph.txt");
+graph.BFS(1, n => Console.WriteLine(n.label));
