@@ -44,6 +44,13 @@ namespace GrantAssignment
     class Graph
     {
 
+        public int Count
+        {
+            get
+            {
+                return graph.Count;
+            }
+        }
         Dictionary<int, GNode> graph = new Dictionary<int, GNode>();
 
 
@@ -137,6 +144,16 @@ namespace GrantAssignment
 
                 onNodeVisited.visited(current);
             }
+        }
+
+        public void FromFile(string path)
+        {
+            int counter = 0;
+
+            using (StreamReader sr = new StreamReader(path))
+            {
+                if counter == 2
+                  }
         }
     }
 }
