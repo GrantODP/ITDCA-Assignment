@@ -26,7 +26,17 @@ namespace GrantAssignment
             run();
             stopwatch.Stop();
 
-            return idTracker++;
+            int id = idTracker++;
+            measuredRuns.Add(
+             id,
+               new Performace(stopwatch.ElapsedMilliseconds));
+
+            return id;
+        }
+
+        public Performace GetPerformace(int id)
+        {
+            return measuredRuns[id];
         }
 
     }
