@@ -88,6 +88,7 @@ namespace GrantAssignment
             return graph.ContainsKey(node);
         }
 
+        //QUESTION 2 BFS TRAVERSAL
         public void BFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
         {
             ThrowIfNodeDoesntExist(labelNode);
@@ -113,6 +114,7 @@ namespace GrantAssignment
 
         }
 
+        //QUESTION 2 DFS TRAVERSAL
         public void DFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
         {
             ThrowIfNodeDoesntExist(labelNode);
