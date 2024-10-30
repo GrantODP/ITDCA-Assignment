@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GrantAssignment
 {
     class GNode
@@ -34,6 +36,10 @@ namespace GrantAssignment
         }
     }
 
+    public interface IOnNodeVisited<T>
+    {
+        void visited(T node);
+    }
 
     class Graph
     {
@@ -76,9 +82,59 @@ namespace GrantAssignment
             graph[node2].AddEdge(ed2);
         }
 
+
         public bool HasNode(int node)
         {
             return graph.ContainsKey(node);
+        }
+
+        public void BFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
+        {
+            ThrowIfNodeDoesntExist(labelNode);
+            Queue<GNode> queue = new Queue<GNode>();
+            HashSet<int> visited = new HashSet<int>();
+            queue.Enqueue(graph[labelNode]);
+            visited.Add(labelNode);
+
+            while (queue.Count > 0)
+            {
+                GNode current = queue.Dequeue();
+
+                foreach (var edge in current.neighbours)
+                {
+                    if (!visited.Contains(edge.neighbour.label))
+                    {
+                        queue.Enqueue(edge.neighbour);
+                    }
+                }
+
+                onNodeVisited.visited(current);
+            }
+
+        }
+
+        public void DFS(int labelNode, IOnNodeVisited<GNode> onNodeVisited)
+        {
+            ThrowIfNodeDoesntExist(labelNode);
+            Stack<GNode> stack = new Stack<GNode>();
+            HashSet<int> visited = new HashSet<int>();
+            stack.Push(graph[labelNode]);
+            visited.Add(labelNode);
+
+            while (stack.Count > 0)
+            {
+                GNode current = stack.Pop();
+
+                foreach (var edge in current.neighbours)
+                {
+                    if (!visited.Contains(edge.neighbour.label))
+                    {
+                        stack.Push(edge.neighbour);
+                    }
+                }
+
+                onNodeVisited.visited(current);
+            }
         }
     }
 }
