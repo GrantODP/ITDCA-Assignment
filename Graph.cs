@@ -23,16 +23,38 @@ namespace GrantAssignment
 
 
     }
+    class EdgePair
+    {
+        public GNode node1;
+        public GNode node2;
+
+        public EdgePair(GNode node1, GNode node2)
+        {
+            this.node1 = node1;
+            this.node2 = node2;
+        }
+
+        public GNode Neighbour(GNode node)
+        {
+            if (node == node1)
+                return node2;
+            else if (node == node2)
+                return node1;
+
+            return null;
+        }
+
+    }
 
     class GEdge
     {
         public float weight { get; set; }
-        public GNode neighbour { get; }
+        public EdgePair nodes { get; }
 
-        public GEdge(float weight, GNode neighbour)
+        public GEdge(float weight, GNode node1, GNode node2)
         {
             this.weight = weight;
-            this.neighbour = neighbour;
+            this.nodes = new EdgePair(node1, node2);
         }
     }
 
@@ -50,7 +72,7 @@ namespace GrantAssignment
         public delegate void OnNodeVisited(GNode node);
 
         Dictionary<int, GNode> graph = new Dictionary<int, GNode>();
-
+        List<GEdge> allEdges = new List<GEdge>();
 
         public void AddNode(int label)
         {
@@ -80,11 +102,10 @@ namespace GrantAssignment
 
         public void AddEdge(float weight, int node1, int node2)
         {
-            GEdge ed1 = new GEdge(weight, graph[node2]);
-            GEdge ed2 = new GEdge(weight, graph[node1]);
-
-            graph[node1].AddEdge(ed1);
-            graph[node2].AddEdge(ed2);
+            GEdge edge = new GEdge(weight, graph[node1], graph[node2]);
+            allEdges.Add(edge);
+            graph[node1].AddEdge(edge);
+            graph[node2].AddEdge(edge);
         }
 
 
@@ -107,10 +128,12 @@ namespace GrantAssignment
 
                 foreach (var edge in current.neighbours)
                 {
-                    var label = edge.neighbour.label;
+                    var neighbour = edge.nodes.Neighbour(current);
+                    var label = neighbour.label;
+
                     if (!visited.Contains(label))
                     {
-                        queue.Enqueue(edge.neighbour);
+                        queue.Enqueue(neighbour);
                         visited.Add(label);
                     }
                 }
@@ -134,10 +157,12 @@ namespace GrantAssignment
 
                 foreach (var edge in current.neighbours)
                 {
-                    var label = edge.neighbour.label;
+                    var neighbour = edge.nodes.Neighbour(current);
+                    var label = neighbour.label;
+
                     if (!visited.Contains(label))
                     {
-                        stack.Push(edge.neighbour);
+                        stack.Push(neighbour);
                         visited.Add(label);
                     }
                 }
@@ -150,7 +175,12 @@ namespace GrantAssignment
         public void FromFile(string path)
         {
             int counter = 0;
+
             List<string> edgesToCreate = new List<string>();
+
+            graph.Clear();
+            allEdges.Clear();
+
             int nodesToAdd = 0;
             using (StreamReader sr = new StreamReader(path))
             {
@@ -183,6 +213,8 @@ namespace GrantAssignment
 
         private void BuildNodes(int minLable, int maxLable)
         {
+            // Small optimization to avoid reallocation
+            graph.EnsureCapacity(maxLable - minLable - 1);
             for (; minLable <= maxLable; minLable++)
             {
                 AddNode(minLable);
@@ -191,6 +223,8 @@ namespace GrantAssignment
         private void BuildEdges(List<string> edges)
         {
 
+            // Small optimization to avoid reallocation
+            allEdges.EnsureCapacity(edges.Count);
             foreach (var edge in edges)
             {
                 int[] values = Array.ConvertAll(edge.Split(" "), Int32.Parse);
@@ -202,6 +236,7 @@ namespace GrantAssignment
 
             }
         }
+
 
     }
 }
