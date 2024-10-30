@@ -51,6 +51,7 @@ namespace GrantAssignment
                 return graph.Count;
             }
         }
+
         Dictionary<int, GNode> graph = new Dictionary<int, GNode>();
 
 
@@ -146,14 +147,62 @@ namespace GrantAssignment
             }
         }
 
+        //QUESTION 2 READ FROM FILE
         public void FromFile(string path)
         {
             int counter = 0;
-
+            List<string> edgesToCreate = new List<string>();
+            int nodesToAdd = 0;
             using (StreamReader sr = new StreamReader(path))
             {
-                if counter == 2
-                  }
+                string ln;
+                while ((ln = sr.ReadLine()) != null)
+                {
+
+
+                    if (counter == 0)
+                    {
+                        Int32.TryParse(ln, out nodesToAdd);
+                    }
+                    else if (counter == 1)
+                    {
+                        int edgeCount = 0;
+                        Int32.TryParse(ln, out edgeCount);
+                        edgesToCreate.Capacity = edgeCount;
+                    }
+                    else
+                    {
+                        edgesToCreate.Add(ln);
+                    }
+
+                    counter++;
+                }
+            }
+            BuildNodes(1, nodesToAdd);
+            BuildEdges(edgesToCreate);
         }
+
+        private void BuildNodes(int minLable, int maxLable)
+        {
+            for (; minLable <= maxLable; minLable++)
+            {
+                AddNode(minLable);
+            }
+        }
+        private void BuildEdges(List<string> edges)
+        {
+
+            foreach (var edge in edges)
+            {
+                int[] values = Array.ConvertAll(edge.Split(" "), Int32.Parse);
+
+                if (values.Length != 3)
+                    continue;
+
+                AddEdge(values[2], values[0], values[1]);
+
+            }
+        }
+
     }
 }
