@@ -18,7 +18,7 @@ class UnionFind
         }
         int parent = -1;
 
-        while (child.Equals(parent))
+        while (!child.Equals(parent))
         {
             parent = parentMap[child];
             //next child
