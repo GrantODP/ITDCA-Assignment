@@ -17,19 +17,28 @@ class UnionFind
         {
             throw new InvalidOperationException("Can not find parent of negative");
         }
-        int parent = parentMap[child];
-        int tempChild = parentMap[parent];
 
-        while (!tempChild.Equals(parent))
+        int root = child;
+
+        // look for root
+        while (!root.Equals(parentMap[root]))
         {
-            parent = parentMap[tempChild];
-            //next child
-            tempChild = parentMap[parent];
+            root = parentMap[root];
+
         }
 
         //path compression. Reduce number of look ups by directly by updating to root parent
-        parentMap[child] = parent;
-        return parent;
+        int compressChild = child;
+
+        while (!compressChild.Equals(parentMap[compressChild]))
+        {
+            int parent = parentMap[compressChild];
+            parentMap[compressChild] = root;
+            compressChild = parent;
+
+        }
+        return root;
+
     }
 
     public void Add(int value)
