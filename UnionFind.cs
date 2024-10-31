@@ -41,6 +41,7 @@ class UnionFind
 
     }
 
+
     public void Add(int value)
     {
         parentMap[value] = value;
@@ -52,8 +53,14 @@ class UnionFind
 
         int parentA = FindParent(a);
         int parentB = FindParent(b);
+        // Console.WriteLine($"parents\nParentA:{parentA}, ParentB:{parentB}");
         int parentRankA = rankMap[parentA];
         int parentRankB = rankMap[parentB];
+
+        if (parentA == parentB)
+        {
+            return;
+        }
 
         if (parentRankA > parentRankB)
         {
@@ -65,8 +72,8 @@ class UnionFind
         }
         else
         {
-            parentMap[parentB] = parentA;
-            rankMap[parentA] += 1;
+            parentMap[parentA] = parentB;
+            rankMap[parentB] += 1;
         }
     }
 
