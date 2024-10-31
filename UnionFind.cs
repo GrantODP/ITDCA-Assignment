@@ -48,15 +48,15 @@ class UnionFind
 
         if (parentRankA > parentRankB)
         {
-            parentMap[b] = parentA;
+            parentMap[parentB] = parentA;
         }
         else if (parentRankA < parentRankB)
         {
-            parentMap[a] = parentB;
+            parentMap[parentA] = parentB;
         }
         else
         {
-            parentMap[b] = parentA;
+            parentMap[parentB] = parentA;
             rankMap[parentA] += 1;
         }
     }
