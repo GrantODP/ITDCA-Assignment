@@ -16,15 +16,18 @@ class UnionFind
         {
             throw new InvalidOperationException("Can not find parent of negative");
         }
-        int parent = -1;
+        int tempChild = child;
+        int parent = parentMap[tempChild];
 
-        while (!child.Equals(parent))
+        while (!tempChild.Equals(parent))
         {
-            parent = parentMap[child];
+            parent = parentMap[tempChild];
             //next child
-            child = parentMap[parent];
+            tempChild = parentMap[parent];
         }
 
+        //path compression
+        parentMap[child] = parent;
         return parent;
     }
 
