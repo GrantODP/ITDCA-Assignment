@@ -13,7 +13,7 @@ namespace GrantAssignment
 
         public bool HasEdge(float weight, int neighbour)
         {
-            return neighbours.Any(edge => (edge.neighbour.label == neighbour) && (edge.weight == weight));
+            return neighbours.Any(edge => ((edge.nodes.IsNeighbour(this)) && (edge.weight == weight)));
         }
 
         public void AddEdge(GEdge edge)
@@ -44,6 +44,11 @@ namespace GrantAssignment
             return null;
         }
 
+        public bool IsNeighbour(GNode node)
+        {
+            return node == node1 || node == node2;
+        }
+
     }
 
     class GEdge
@@ -55,6 +60,11 @@ namespace GrantAssignment
         {
             this.weight = weight;
             this.nodes = new EdgePair(node1, node2);
+        }
+
+        public override string ToString()
+        {
+            return $"[{nodes.node1.label}]<-->[{nodes.node2.label}]";
         }
     }
 
@@ -237,6 +247,44 @@ namespace GrantAssignment
             }
         }
 
+        public UnionFind BuildUnionFind()
+        {
+            UnionFind unionFind = new UnionFind(graph.Count);
+            foreach (var key in graph.Keys)
+            {
+                unionFind.Add(key);
+            }
+            return unionFind;
+        }
 
+        public List<GEdge> KruskalMST()
+        {
+            UnionFind unionFind = BuildUnionFind();
+
+            List<GEdge> edgesMST = new List<GEdge>(graph.Count - 1);
+            float mstWeight = 0;
+            allEdges.Sort((x, y) => x.weight.CompareTo(y.weight));
+
+            int i = 0;
+
+            while (i < graph.Count && i < allEdges.Count)
+            {
+                var edge = allEdges[i];
+                var x = unionFind.FindParent(edge.nodes.node1.label);
+                var y = unionFind.FindParent(edge.nodes.node2.label);
+
+                if (x != y)
+                {
+                    unionFind.Union(x, y);
+                    mstWeight += edge.weight;
+                    edgesMST.Add(edge);
+                }
+
+                i++;
+            }
+
+            return edgesMST;
+
+        }
     }
 }
