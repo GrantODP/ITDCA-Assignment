@@ -51,7 +51,7 @@ namespace GrantAssignment
 
     }
 
-    class GEdge
+    class GEdge : IComparable<GEdge>
     {
         public float weight { get; set; }
         public EdgePair nodes { get; }
@@ -65,6 +65,15 @@ namespace GrantAssignment
         public override string ToString()
         {
             return $"[{nodes.node1.label}]<-->[{nodes.node2.label}]";
+
+        }
+
+        public int CompareTo(GEdge rhs)
+        {
+            if (rhs == null) return 1;
+
+            return weight.CompareTo(rhs.weight);
+
         }
     }
 
@@ -286,5 +295,51 @@ namespace GrantAssignment
             return edgesMST;
 
         }
+
+        public List<GEdge> PrimsMST(int label)
+        {
+
+            HashSet<GEdge> edgesMST = new HashSet<GEdge>(graph.Count - 1);
+            HashSet<int> mstNodes = new HashSet<int>(graph.Count);
+            SortedSet<GEdge> edgeQueue = new SortedSet<GEdge>();
+
+            GNode node = graph[label];
+            mstNodes.Add(node.label);
+            node.neighbours.ForEach(edge => edgeQueue.Add(edge));
+
+            while (mstNodes.Count < graph.Count)
+            {
+                //dequeue highest priority
+                var minEdge = edgeQueue.Min;
+                edgeQueue.Remove(minEdge);
+                node = minEdge.nodes.node1;
+
+                // Console.WriteLine($"Checking edge at {minEdge}");
+                // Console.WriteLine($"Node is {node.label}");
+
+                if (mstNodes.Contains(node.label))
+                {
+                    node = minEdge.nodes.node2;
+                }
+
+                // Console.WriteLine($"Node after check {node.label}");
+
+                if (!mstNodes.Contains(node.label))
+                {
+                    edgesMST.Add(minEdge);
+                    // Console.WriteLine($"Adding Node:{node.label}, Edge: {minEdge}");
+                    mstNodes.Add(node.label);
+                    node.neighbours.ForEach(edge =>
+                    {
+                        if (!edgesMST.Contains(edge))
+                            edgeQueue.Add(edge);
+
+                    });
+                }
+            }
+
+            return edgesMST.ToList();
+        }
     }
+
 }
