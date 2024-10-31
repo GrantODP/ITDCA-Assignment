@@ -2,6 +2,7 @@ class UnionFind
 {
 
     Dictionary<int, int> parentMap;
+
     Dictionary<int, int> rankMap;
 
     public UnionFind(int maxItems)
@@ -16,8 +17,8 @@ class UnionFind
         {
             throw new InvalidOperationException("Can not find parent of negative");
         }
-        int tempChild = child;
-        int parent = parentMap[tempChild];
+        int parent = parentMap[child];
+        int tempChild = parentMap[parent];
 
         while (!tempChild.Equals(parent))
         {
@@ -26,9 +27,15 @@ class UnionFind
             tempChild = parentMap[parent];
         }
 
-        //path compression
+        //path compression. Reduce number of look ups by directly by updating to root parent
         parentMap[child] = parent;
         return parent;
+    }
+
+    public void Add(int value)
+    {
+        parentMap[value] = value;
+        rankMap[value] = 0;
     }
 
     public void Union(int a, int b)
