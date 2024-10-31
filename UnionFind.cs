@@ -1,22 +1,22 @@
-class UnionFind<T>
+class UnionFind
 {
 
-    Dictionary<T, T> parentMap;
-    Dictionary<T, int> rankMap;
+    Dictionary<int, int> parentMap;
+    Dictionary<int, int> rankMap;
 
     public UnionFind(int maxItems)
     {
-        parentMap = new Dictionary<T, T>(maxItems);
-        rankMap = new Dictionary<T, int>(maxItems);
+        parentMap = new Dictionary<int, int>(maxItems);
+        rankMap = new Dictionary<int, int>(maxItems);
     }
     // 1:1  2:1  3:2 
-    T FindParent(T child)
+    public int FindParent(int child)
     {
-        if (child == null)
+        if (child < 0)
         {
-            throw new InvalidOperationException("Can not find parent of null");
+            throw new InvalidOperationException("Can not find parent of negative");
         }
-        T parent = default(T);
+        int parent = -1;
 
         while (child.Equals(parent))
         {
@@ -26,6 +26,29 @@ class UnionFind<T>
         }
 
         return parent;
+    }
+
+    public void Union(int a, int b)
+    {
+
+        int parentA = FindParent(a);
+        int parentB = FindParent(b);
+        int parentRankA = rankMap[parentA];
+        int parentRankB = rankMap[parentB];
+
+        if (parentRankA > parentRankB)
+        {
+            parentMap[b] = parentA;
+        }
+        else if (parentRankA < parentRankB)
+        {
+            parentMap[a] = parentB;
+        }
+        else
+        {
+            parentMap[b] = parentA;
+            rankMap[parentA] += 1;
+        }
     }
 
 }
