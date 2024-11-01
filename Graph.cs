@@ -256,9 +256,9 @@ namespace GrantAssignment
             }
         }
 
-        public UnionFind BuildUnionFind()
+        public DisjointSet BuildUnionFind()
         {
-            UnionFind unionFind = new UnionFind(graph.Count);
+            DisjointSet unionFind = new UnionFind(graph.Count);
             foreach (var key in graph.Keys)
             {
                 unionFind.Add(key);
@@ -268,7 +268,7 @@ namespace GrantAssignment
 
         public List<GEdge> KruskalMST()
         {
-            UnionFind unionFind = BuildUnionFind();
+            DisjointSet unionFind = BuildUnionFind();
 
             List<GEdge> edgesMST = new List<GEdge>(graph.Count - 1);
             float mstWeight = 0;

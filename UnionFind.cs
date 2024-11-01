@@ -53,7 +53,6 @@ class UnionFind
 
         int parentA = FindParent(a);
         int parentB = FindParent(b);
-        // Console.WriteLine($"parents\nParentA:{parentA}, ParentB:{parentB}");
         int parentRankA = rankMap[parentA];
         int parentRankB = rankMap[parentB];
 
