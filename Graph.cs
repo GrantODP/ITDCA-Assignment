@@ -368,34 +368,32 @@ namespace GrantAssignment
       return edgesMST;
     }
 
-    // public PerformanceTracker MeasureKruskalMST()
-    // {
-    //   PerformanceTracker tracker = new PerformanceTracker();
-    //   var disjointset = BuildUnionFind();
-    //
-    //   for (int i = 0; i < 10; i++)
-    //   {
-    //     tracker.Measure(() =>
-    //     {
-    //       KruskalMST(this.graph, disjointset);
-    //     });
-    //   }
-    //   return tracker;
-    // }
-    //
-    // public PerformanceTracker MeasurePrimsMST(int label)
-    // {
-    //   PerformanceTracker tracker = new PerformanceTracker();
-    //
-    //   for (int i = 0; i < 10; i++)
-    //   {
-    //     tracker.Measure(() =>
-    //     {
-    //       PrimsMST(label);
-    //     });
-    //   }
-    //   return tracker;
-    // }
+    public PerformanceTracker MeasureKruskalMST()
+    {
+      PerformanceTracker tracker = new PerformanceTracker();
+      var disjointset = BuildUnionFind();
+
+
+      tracker.Measure(() =>
+      {
+        KruskalMST(this.graph, disjointset);
+      });
+
+      return tracker;
+    }
+
+    public PerformanceTracker MeasurePrimsMST(int label)
+    {
+      PerformanceTracker tracker = new PerformanceTracker();
+
+
+      tracker.Measure(() =>
+      {
+        PrimsMST(label);
+      });
+
+      return tracker;
+    }
 
 
 
