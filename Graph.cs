@@ -348,7 +348,7 @@ namespace GrantAssignment
           node = minEdge.nodes.node2;
         }
 
-
+        //ensure no visted nodes are visited again.
         if (!mstNodes.Contains(node.label))
         {
           edgesMST.Add(minEdge);
