@@ -2,8 +2,19 @@ using System.Collections.Generic;
 
 namespace GrantAssignment
 {
+
+  // ░██████╗░██╗░░░██╗███████╗░██████╗████████╗██╗░█████╗░███╗░░██╗  ░░███╗░░
+  // ██╔═══██╗██║░░░██║██╔════╝██╔════╝╚══██╔══╝██║██╔══██╗████╗░██║  ░████║░░
+  // ██║██╗██║██║░░░██║█████╗░░╚█████╗░░░░██║░░░██║██║░░██║██╔██╗██║  ██╔██║░░
+  // ╚██████╔╝██║░░░██║██╔══╝░░░╚═══██╗░░░██║░░░██║██║░░██║██║╚████║  ╚═╝██║░░
+  // ░╚═██╔═╝░╚██████╔╝███████╗██████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║  ███████╗
+  // ░░░╚═╝░░░░╚═════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝  ╚══════╝
+
   class GNode
   {
+    /*
+     *Node will store the key/label and edges/ connected nodes as adjency list
+     * */
     public int label { get; }
     public List<GEdge> neighbours = new List<GEdge>();
     public GNode(int key)
@@ -25,6 +36,7 @@ namespace GrantAssignment
   }
   class EdgePair
   {
+    // because graph is  undirected only need 1 edge to store relationship, instead of from and source nodes.
     public GNode node1;
     public GNode node2;
 
@@ -34,6 +46,7 @@ namespace GrantAssignment
       this.node2 = node2;
     }
 
+    //Utility function to chech if current is a neighbour.
     public GNode Neighbour(GNode node)
     {
       if (node == node1)
@@ -88,32 +101,22 @@ namespace GrantAssignment
         return graph.Count;
       }
     }
+
+    //Utility used for testing in traversal
     public delegate void OnNodeVisited(GNode node);
 
+    //use Dictionary so we can reference node by label
     Dictionary<int, GNode> graph = new Dictionary<int, GNode>();
     List<GEdge> allEdges = new List<GEdge>();
 
     public void AddNode(int label)
     {
-      ThrowIfNodeDoesExist(label);
       graph.Add(label, new GNode(label));
 
     }
 
-    private void ThrowIfNodeDoesExist(int label)
-    {
-      if (!HasNode(label))
-      {
-        return;
-      }
-      throw new InvalidOperationException("Node already exists in graph");
-    }
-
     public bool HasEdge(float weight, int node1, int node2)
     {
-      ThrowIfNodeDoesExist(node1);
-      ThrowIfNodeDoesExist(node2);
-
       return graph[node1].HasEdge(weight, node2) && graph[node2].HasEdge(weight, node1);
 
 
@@ -133,10 +136,19 @@ namespace GrantAssignment
       return graph.ContainsKey(node);
     }
 
+    // ░██████╗░██╗░░░██╗███████╗░██████╗████████╗██╗░█████╗░███╗░░██╗  ██████╗░
+    // ██╔═══██╗██║░░░██║██╔════╝██╔════╝╚══██╔══╝██║██╔══██╗████╗░██║  ╚════██╗
+    // ██║██╗██║██║░░░██║█████╗░░╚█████╗░░░░██║░░░██║██║░░██║██╔██╗██║  ░░███╔═╝
+    // ╚██████╔╝██║░░░██║██╔══╝░░░╚═══██╗░░░██║░░░██║██║░░██║██║╚████║  ██╔══╝░░
+    // ░╚═██╔═╝░╚██████╔╝███████╗██████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║  ███████╗
+    // ░░░╚═╝░░░░╚═════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝  ╚══════╝
+    //
     //QUESTION 2 BFS TRAVERSAL
     public void BFS(int labelNode, OnNodeVisited onVisit)
     {
       Queue<GNode> queue = new Queue<GNode>();
+
+      //probably better to hash int over GNode
       HashSet<int> visited = new HashSet<int>();
       queue.Enqueue(graph[labelNode]);
       visited.Add(labelNode);
@@ -147,6 +159,7 @@ namespace GrantAssignment
 
         foreach (var edge in current.neighbours)
         {
+          //because only 1 edge is stored we dont know which node of the pair to visit next so we get the neighbour of current
           var neighbour = edge.nodes.Neighbour(current);
           var label = neighbour.label;
 
@@ -193,7 +206,8 @@ namespace GrantAssignment
     //QUESTION 2 READ FROM FILE
     public void FromFile(string path)
     {
-      int counter = 0;
+      //used to determine which line we are on in file
+      int lineNumber = 0;
 
       List<string> edgesToCreate = new List<string>();
 
@@ -208,11 +222,11 @@ namespace GrantAssignment
         {
 
 
-          if (counter == 0)
+          if (lineNumber == 0)
           {
             Int32.TryParse(ln, out nodesToAdd);
           }
-          else if (counter == 1)
+          else if (lineNumber == 1)
           {
             int edgeCount = 0;
             Int32.TryParse(ln, out edgeCount);
@@ -223,7 +237,7 @@ namespace GrantAssignment
             edgesToCreate.Add(ln);
           }
 
-          counter++;
+          lineNumber++;
         }
       }
       BuildNodes(1, nodesToAdd);
@@ -232,8 +246,8 @@ namespace GrantAssignment
 
     private void BuildNodes(int minLable, int maxLable)
     {
-      // Small optimization to avoid reallocation
-      graph.EnsureCapacity(maxLable - minLable - 1);
+      // Small optimization to avoid reallocation and add in range[min,max] inclusive 
+      graph.EnsureCapacity(maxLable - minLable + 1);
       for (; minLable <= maxLable; minLable++)
       {
         AddNode(minLable);
@@ -255,6 +269,13 @@ namespace GrantAssignment
 
       }
     }
+
+    // ░██████╗░██╗░░░██╗███████╗░██████╗████████╗██╗░█████╗░███╗░░██╗  ██████╗░
+    // ██╔═══██╗██║░░░██║██╔════╝██╔════╝╚══██╔══╝██║██╔══██╗████╗░██║  ╚════██╗
+    // ██║██╗██║██║░░░██║█████╗░░╚█████╗░░░░██║░░░██║██║░░██║██╔██╗██║  ░█████╔╝
+    // ╚██████╔╝██║░░░██║██╔══╝░░░╚═══██╗░░░██║░░░██║██║░░██║██║╚████║  ░╚═══██╗
+    // ░╚═██╔═╝░╚██████╔╝███████╗██████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║  ██████╔╝
+    // ░░░╚═╝░░░░╚═════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝  ╚═════╝░
 
     public DisjointSet BuildUnionFind()
     {
@@ -295,9 +316,17 @@ namespace GrantAssignment
 
     }
 
-    public List<GEdge> PrimsMST(int label)
+    // ░██████╗░██╗░░░██╗███████╗░██████╗████████╗██╗░█████╗░███╗░░██╗  ░░██╗██╗
+    // ██╔═══██╗██║░░░██║██╔════╝██╔════╝╚══██╔══╝██║██╔══██╗████╗░██║  ░██╔╝██║
+    // ██║██╗██║██║░░░██║█████╗░░╚█████╗░░░░██║░░░██║██║░░██║██╔██╗██║  ██╔╝░██║
+    // ╚██████╔╝██║░░░██║██╔══╝░░░╚═══██╗░░░██║░░░██║██║░░██║██║╚████║  ███████║
+    // ░╚═██╔═╝░╚██████╔╝███████╗██████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║  ╚════██║
+    // ░░░╚═╝░░░░╚═════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝  ░░░░░╚═╝
+
+    public HashSet<GEdge> PrimsMST(int label)
     {
 
+      //Dont want to add duplicate edges so use hashset and sortedset
       HashSet<GEdge> edgesMST = new HashSet<GEdge>(graph.Count - 1);
       HashSet<int> mstNodes = new HashSet<int>(graph.Count);
       SortedSet<GEdge> edgeQueue = new SortedSet<GEdge>();
@@ -314,23 +343,21 @@ namespace GrantAssignment
         edgeQueue.Remove(minEdge);
         node = minEdge.nodes.node1;
 
-        // Console.WriteLine($"Checking edge at {minEdge}");
-        // Console.WriteLine($"Node is {node.label}");
 
         if (mstNodes.Contains(node.label))
         {
+          //becuase we want to add neighbours edges we switch to neighbour
           node = minEdge.nodes.node2;
         }
 
-        // Console.WriteLine($"Node after check {node.label}");
 
         if (!mstNodes.Contains(node.label))
         {
           edgesMST.Add(minEdge);
-          // Console.WriteLine($"Adding Node:{node.label}, Edge: {minEdge}");
           mstNodes.Add(node.label);
           node.neighbours.ForEach(edge =>
           {
+            //just to ensure edges already in MST are not added back to queue
             if (!edgesMST.Contains(edge))
               edgeQueue.Add(edge);
 
@@ -338,37 +365,37 @@ namespace GrantAssignment
         }
       }
 
-      return edgesMST.ToList();
+      return edgesMST;
     }
 
-    public PerformanceTracker MeasureKruskalMST()
-    {
-      PerformanceTracker tracker = new PerformanceTracker();
-      var disjointset = BuildUnionFind();
-
-      for (int i = 0; i < 10; i++)
-      {
-        tracker.Measure(() =>
-        {
-          KruskalMST(this.graph, disjointset);
-        });
-      }
-      return tracker;
-    }
-
-    public PerformanceTracker MeasurePrimsMST(int label)
-    {
-      PerformanceTracker tracker = new PerformanceTracker();
-
-      for (int i = 0; i < 10; i++)
-      {
-        tracker.Measure(() =>
-        {
-          PrimsMST(label);
-        });
-      }
-      return tracker;
-    }
+    // public PerformanceTracker MeasureKruskalMST()
+    // {
+    //   PerformanceTracker tracker = new PerformanceTracker();
+    //   var disjointset = BuildUnionFind();
+    //
+    //   for (int i = 0; i < 10; i++)
+    //   {
+    //     tracker.Measure(() =>
+    //     {
+    //       KruskalMST(this.graph, disjointset);
+    //     });
+    //   }
+    //   return tracker;
+    // }
+    //
+    // public PerformanceTracker MeasurePrimsMST(int label)
+    // {
+    //   PerformanceTracker tracker = new PerformanceTracker();
+    //
+    //   for (int i = 0; i < 10; i++)
+    //   {
+    //     tracker.Measure(() =>
+    //     {
+    //       PrimsMST(label);
+    //     });
+    //   }
+    //   return tracker;
+    // }
 
 
 
