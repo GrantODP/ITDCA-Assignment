@@ -1,43 +1,35 @@
 using System.Diagnostics;
-
 namespace GrantAssignment
 {
 
-    struct Performace
+  class PerformanceTracker
+  {
+
+    public delegate void Run();
+
+    public double measuredRun = 0;
+
+    public void Measure(Run run)
     {
-        long RunTime { get; set; }
-        public Performace(long measured)
-        {
-            RunTime = measured;
-        }
+      Stopwatch stopwatch = Stopwatch.StartNew();
+      run();
+      stopwatch.Stop();
+
+
+      measuredRun = stopwatch.Elapsed.TotalNanoseconds;
+
     }
 
-    class PerformanceTracker
+
+
+    public override string ToString()
     {
 
-        public delegate void Run();
-
-        Dictionary<int, Performace> measuredRuns = new Dictionary<int, Performace>();
-        private int idTracker = 0;
-
-        public int Measure(Run run)
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            run();
-            stopwatch.Stop();
-
-            int id = idTracker++;
-            measuredRuns.Add(
-             id,
-               new Performace(stopwatch.ElapsedMilliseconds));
-
-            return id;
-        }
-
-        public Performace GetPerformace(int id)
-        {
-            return measuredRuns[id];
-        }
+      return $"{measuredRun}ns";
 
     }
+
+
+
+  }
 }
