@@ -287,10 +287,9 @@ namespace GrantAssignment
       return unionFind;
     }
 
-    public List<GEdge> KruskalMST(Dictionary<int, GNode> graph, DisjointSet unionFind)
+    public List<GEdge> KruskalMST(Dictionary<int, GNode> graph, DisjointSet unionFind, List<GEdge> edgesMST)
     {
 
-      List<GEdge> edgesMST = new List<GEdge>(graph.Count - 1);
       float mstWeight = 0;
       allEdges.Sort((x, y) => x.weight.CompareTo(y.weight));
 
@@ -323,12 +322,11 @@ namespace GrantAssignment
     // ░╚═██╔═╝░╚██████╔╝███████╗██████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║  ╚════██║
     // ░░░╚═╝░░░░╚═════╝░╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝  ░░░░░╚═╝
 
-    public HashSet<GEdge> PrimsMST(int label)
+    public HashSet<GEdge> PrimsMST(int label, HashSet<GEdge> edgesMST, HashSet<int> mstNodes)
     {
 
       //Dont want to add duplicate edges so use hashset and sortedset
-      HashSet<GEdge> edgesMST = new HashSet<GEdge>(graph.Count - 1);
-      HashSet<int> mstNodes = new HashSet<int>(graph.Count);
+
       SortedSet<GEdge> edgeQueue = new SortedSet<GEdge>();
 
       GNode node = graph[label];
@@ -373,10 +371,11 @@ namespace GrantAssignment
       PerformanceTracker tracker = new PerformanceTracker();
       var disjointset = BuildUnionFind();
 
+      List<GEdge> edgesMST = new List<GEdge>(graph.Count - 1);
 
       tracker.Measure(() =>
       {
-        KruskalMST(this.graph, disjointset);
+        KruskalMST(this.graph, disjointset, edgesMST);
       });
 
       return tracker;
@@ -386,10 +385,11 @@ namespace GrantAssignment
     {
       PerformanceTracker tracker = new PerformanceTracker();
 
-
+      HashSet<GEdge> edgesMST = new HashSet<GEdge>(graph.Count - 1);
+      HashSet<int> mstNodes = new HashSet<int>(graph.Count);
       tracker.Measure(() =>
       {
-        PrimsMST(label);
+        PrimsMST(label, edgesMST, mstNodes);
       });
 
       return tracker;
