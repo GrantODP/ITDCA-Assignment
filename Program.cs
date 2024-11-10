@@ -11,7 +11,7 @@ var pst = graph.MeasurePrimsMST(1);
 
 using (StreamWriter sw = File.AppendText("Performance.csv"))
 {
-  sw.WriteLine($"{kst.measuredRun},{pst.measuredRun}");
+    sw.WriteLine($"{kst.measuredRun},{pst.measuredRun}");
 }
 Console.WriteLine(kst);
 Console.WriteLine(pst);
